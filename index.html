@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phonetics Translations</title>
+    <link rel="stylesheet" href="https://unpkg.com/latex.css/style.min.css"/>
+</head>
+<body>
+<p>
+    <label for="text">Text</label>
+    <textarea id="text" rows="7"></textarea>
+</p>
+<p>
+    <label for="language">Language</label>
+    <select id="language">
+        <option value="en_UK">English (UK)</option>
+        <option value="en_US">English (US)</option>
+        <option value="fr_FR">French</option>
+        <option value="de">German</option>
+        <option value="es_ES">Spanish</option>
+    </select>
+</p>
+<p>
+    <button id="submit">Translate</button>
+</p>
+<p>
+    <label for="result">Result</label>
+    <textarea id="result" readonly rows="7"></textarea>
+    <script src="index.js"></script>
+</body>
+</html>
