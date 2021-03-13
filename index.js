@@ -4,7 +4,7 @@ const responseTimeEl = document.getElementById('response-time');
 const languageEl = document.getElementById('language');
 const submitEl = document.getElementById('submit');
 const listenEl = document.getElementById('listen');
-const audioEl = document.getElementById('audio');
+const genderEl = document.getElementById('gender');
 
 submitEl.addEventListener('click', async() => {
     const text = textEl.value;
@@ -33,7 +33,7 @@ listenEl.addEventListener('click', async() => {
     if(!text) alert('Please enter some text');
     const t0 = performance.now();
     const response = await fetch(
-        `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}?audio=true`,
+        `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}?audio=true&gender=${genderEl.value}`,
         {
             method: 'post',
             headers: {
