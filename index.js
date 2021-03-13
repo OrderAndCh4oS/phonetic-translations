@@ -22,9 +22,7 @@ submitEl.addEventListener('click', async() => {
         });
     const t1 = performance.now();
     responseTimeEl.innerText = (t1 - t0).toFixed(2);
-    console.log(response);
     const result = await response.json();
-    console.log(result);
     resultEl.value = result.translation;
 });
 
@@ -46,13 +44,11 @@ listenEl.addEventListener('click', async() => {
     responseTimeEl.innerText = (t1 - t0).toFixed(2);
     const encodedAudio = await response.text();
     const arrayBuffer = base64ToArrayBuffer(encodedAudio)
-    console.log('arraybuffer', arrayBuffer);
     createSoundWithBuffer(arrayBuffer)
 
 });
 
 function base64ToArrayBuffer(base64) {
-    console.log('b64', base64);
     const binaryString = window.atob(base64);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
