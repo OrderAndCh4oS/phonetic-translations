@@ -276,7 +276,7 @@ function setProcessingDone(statusEl) {
     statusEl.innerText = 'Done';
     setTimeout(() => {
         statusEl.innerText = '';
-    }, 2500);
+    }, 1800);
 }
 
 function setProcessingError(statusEl) {
@@ -285,5 +285,5 @@ function setProcessingError(statusEl) {
     setTimeout(() => {
         statusEl.style.color = 'rgb(27, 24, 24)';
         statusEl.innerText = '';
-    }, 2500);
+    }, 1800);
 }
