@@ -40,7 +40,9 @@ submitEl.addEventListener('click', async() => {
         } else if('phonetics' in item) {
             span.innerText = item.phonetics[0];
             if(item.phonetics.length > 1) {
-                span.style.color = 'blue'
+                let i = 1;
+                span.style.color = 'blue';
+                span.style.cursor = 'pointer'
                 const infoBox = document.createElement('span');
                 infoBox.innerHTML = item.phonetics
                     .map((p, i) => `<span>${i + 1}. ${p}</span>`)
@@ -65,6 +67,10 @@ submitEl.addEventListener('click', async() => {
                 });
                 span.addEventListener('mouseleave', () => {
                     infoBox.style.display = 'none'
+                });
+                span.addEventListener('click', () => {
+                    span.innerText = item.phonetics[i++ % item.phonetics.length];
+                    span.append(infoBox)
                 });
             }
         }
