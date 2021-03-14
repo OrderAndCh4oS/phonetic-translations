@@ -5,8 +5,10 @@ const languageEl = document.getElementById('language');
 const submitEl = document.getElementById('submit');
 const listenEl = document.getElementById('listen');
 const genderEl = document.getElementById('gender');
+const statusEl = document.getElementById('status');
 
 submitEl.addEventListener('click', async() => {
+    statusEl.innerText = 'Processing...'
     const text = textEl.value;
     if(!text) alert('Please enter some text');
     const t0 = performance.now();
@@ -24,9 +26,14 @@ submitEl.addEventListener('click', async() => {
     responseTimeEl.innerText = (t1 - t0).toFixed(2);
     const result = await response.json();
     resultEl.value = result.translation;
+    statusEl.innerText = 'Done'
+    setTimeout(() => {
+        statusEl.innerText = ''
+    }, 2500);
 });
 
 listenEl.addEventListener('click', async() => {
+    statusEl.innerText = 'Processing...'
     const text = textEl.value;
     if(!text) alert('Please enter some text');
     const t0 = performance.now();
@@ -44,8 +51,11 @@ listenEl.addEventListener('click', async() => {
     responseTimeEl.innerText = (t1 - t0).toFixed(2);
     const encodedAudio = await response.text();
     const arrayBuffer = base64ToArrayBuffer(encodedAudio)
-    createSoundWithBuffer(arrayBuffer)
-
+    await createSoundWithBuffer(arrayBuffer);
+    statusEl.innerText = 'Done'
+    setTimeout(() => {
+        statusEl.innerText = ''
+    }, 2500);
 });
 
 function base64ToArrayBuffer(base64) {
