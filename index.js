@@ -59,8 +59,6 @@ submitEl.addEventListener('click', async() => {
                 infoBox.style.backgroundColor = 'black';
                 infoBox.style.color = 'white';
                 infoBox.style.borderRadius = '2px';
-                infoBox.style.textAlign = 'center';
-
                 span.append(infoBox);
                 span.addEventListener('mouseenter', () => {
                     infoBox.style.display = 'inline-block'
