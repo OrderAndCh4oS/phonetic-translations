@@ -24,6 +24,7 @@ submitEl.addEventListener('click', async() => {
     if(!text) {
         setProcessingDone();
         alert('Please enter some text');
+        return
     }
     const t0 = performance.now();
     const result = await fetchTranslation(text, t0);
@@ -54,6 +55,7 @@ listenEl.addEventListener('click', async() => {
     if(!text) {
         setProcessingDone();
         alert('Please enter some text');
+        return
     }
     const response = await fetchAudio(text);
     await playAudioFromBlob(response);
@@ -66,6 +68,7 @@ downloadEl.addEventListener('click', async() => {
     if(!text) {
         setProcessingDone();
         alert('Please enter some text');
+        return
     }
     const response = await fetchAudio(text);
     await downloadMp3(response);
@@ -78,6 +81,7 @@ listenToFinalEl.addEventListener('click', async() => {
     if(!finalTranslation.length) {
         setProcessingFinalDone();
         alert('Please add translate some text first');
+        return
     }
     const response = await fetchFinalAudio();
     await playAudioFromBlob(response);
@@ -90,6 +94,7 @@ downloadFinalEl.addEventListener('click', async() => {
     if(!text) {
         setProcessingFinalDone();
         alert('Please add translate some text first');
+        return
     }
     const response = await fetchFinalAudio(text);
     await downloadMp3(response);
