@@ -6,6 +6,7 @@ const submitEl = document.getElementById('submit');
 const listenEl = document.getElementById('listen');
 const genderEl = document.getElementById('gender');
 const statusEl = document.getElementById('status');
+const stopEl = document.getElementById('stop');
 
 submitEl.addEventListener('click', async() => {
     statusEl.innerText = 'Processing...'
@@ -69,9 +70,15 @@ function base64ToArrayBuffer(base64) {
 }
 
 async function createSoundWithBuffer( buffer ) {
+    stopEl.style.display = 'inline-block';
     const context = new AudioContext();
     const audioSource = context.createBufferSource();
     audioSource.connect( context.destination );
     audioSource.buffer = await context.decodeAudioData(buffer);
+    const clickEvent = stopEl.addEventListener('click', () => {
+        audioSource.stop()
+        stopEl.style.display = 'none';
+        stopEl.removeEventListener('click', clickEvent)
+    });
     audioSource.start(0);
 }
