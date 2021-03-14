@@ -2,13 +2,15 @@ const textEl = document.getElementById('text');
 const resultAlternativesEl = document.getElementById('result-alternatives');
 const responseTimeEl = document.getElementById('response-time');
 const languageEl = document.getElementById('language');
-const submitEl = document.getElementById('submit');
-const listenEl = document.getElementById('listen');
-const listenToFinalEl = document.getElementById('listen-to-final');
 const genderEl = document.getElementById('gender');
-const statusEl = document.getElementById('status');
+const listenEl = document.getElementById('listen');
 const stopEl = document.getElementById('stop');
+const submitEl = document.getElementById('submit');
 const downloadEl = document.getElementById('download');
+const statusEl = document.getElementById('status');
+const listenToFinalEl = document.getElementById('listen-to-final');
+const downloadFinalEl = document.getElementById('download-final');
+const statusFinalEl = document.getElementById('status-final');
 
 const isLetter = (str) => /\p{L}/u.test(str);
 
@@ -58,18 +60,6 @@ listenEl.addEventListener('click', async() => {
     setProcessingDone();
 });
 
-listenToFinalEl.addEventListener('click', async() => {
-    setProcessing();
-    console.log(finalTranslation);
-    if(!finalTranslation.length) {
-        setProcessingDone();
-        alert('Please add translate some text first');
-    }
-    const response = await fetchFinalAudio();
-    await playAudioFromBlob(response);
-    setProcessingDone();
-});
-
 downloadEl.addEventListener('click', async() => {
     setProcessing();
     const text = textEl.value;
@@ -80,6 +70,30 @@ downloadEl.addEventListener('click', async() => {
     const response = await fetchAudio(text);
     await downloadMp3(response);
     setProcessingDone();
+});
+
+listenToFinalEl.addEventListener('click', async() => {
+    setProcessingFinal()
+    console.log(finalTranslation);
+    if(!finalTranslation.length) {
+        setProcessingFinalDone();
+        alert('Please add translate some text first');
+    }
+    const response = await fetchFinalAudio();
+    await playAudioFromBlob(response);
+    setProcessingFinalDone();
+});
+
+downloadFinalEl.addEventListener('click', async() => {
+    setProcessingFinal();
+    const text = textEl.value;
+    if(!text) {
+        setProcessingFinalDone();
+        alert('Please add translate some text first');
+    }
+    const response = await fetchFinalAudio(text);
+    await downloadMp3(response);
+    setProcessingFinalDone();
 });
 
 async function fetchTranslation(text, t0) {
@@ -216,5 +230,16 @@ function setProcessingDone() {
     statusEl.innerText = 'Done';
     setTimeout(() => {
         statusEl.innerText = '';
+    }, 2500);
+}
+
+function setProcessingFinal() {
+    statusFinalEl.innerText = 'Processing...';
+}
+
+function setProcessingFinalDone() {
+    statusFinalEl.innerText = 'Done';
+    setTimeout(() => {
+        statusFinalEl.innerText = '';
     }, 2500);
 }
