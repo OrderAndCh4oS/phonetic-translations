@@ -5,6 +5,7 @@ const languageEl = document.getElementById('language');
 const genderEl = document.getElementById('gender');
 const listenEl = document.getElementById('listen');
 const stopEl = document.getElementById('stop');
+const stopFinalEl = document.getElementById('stop-final');
 const submitEl = document.getElementById('submit');
 const downloadEl = document.getElementById('download');
 const statusEl = document.getElementById('status');
@@ -19,16 +20,17 @@ let playing = false;
 
 submitEl.addEventListener('click', async() => {
     finalTranslation = [];
-    setProcessing();
+    setProcessing(statusEl);
     resultAlternativesEl.innerHTML = '';
     const text = textEl.value;
     if(!text) {
-        setProcessingDone();
+        setProcessingDone(statusEl);
         alert('Please enter some text');
-        return
+        return;
     }
     const t0 = performance.now();
-    const result = await fetchTranslation(text, t0);
+    const response = await fetchTranslation(text, t0);
+    const result = await response.json();
     const raw = result.raw;
     for(let i = 0; i < raw.length; i++) {
         let item = raw[i];
@@ -47,7 +49,11 @@ submitEl.addEventListener('click', async() => {
         }
         resultAlternativesEl.append(span);
     }
-    setProcessingDone();
+    if(response.status === 200) {
+        setProcessingDone(statusEl);
+    } else {
+        setProcessingError(statusEl)
+    }
 });
 
 listenEl.addEventListener('click', async() => {
@@ -55,29 +61,37 @@ listenEl.addEventListener('click', async() => {
         console.log('Already playing');
         return;
     }
-    setProcessing();
+    setProcessing(statusEl);
     const text = textEl.value;
     if(!text) {
         setProcessingDone();
         alert('Please enter some text');
-        return
+        return;
     }
     const response = await fetchAudio(text);
-    await playAudioFromBlob(response);
-    setProcessingDone();
+    if(response.status === 200) {
+        await playAudioFromBlob(response, stopEl);
+        setProcessingDone(statusEl);
+    } else {
+        setProcessingError(statusEl)
+    }
 });
 
 downloadEl.addEventListener('click', async() => {
     setProcessing();
     const text = textEl.value;
     if(!text) {
-        setProcessingDone();
+        setProcessingDone(statusEl);
         alert('Please enter some text');
-        return
+        return;
     }
     const response = await fetchAudio(text);
-    await downloadMp3(response);
-    setProcessingDone();
+    if(response.status === 200) {
+        await downloadMp3(response);
+        setProcessingDone(statusEl);
+    } else {
+        setProcessingError(statusEl)
+    }
 });
 
 listenToFinalEl.addEventListener('click', async() => {
@@ -85,29 +99,37 @@ listenToFinalEl.addEventListener('click', async() => {
         console.log('Already playing');
         return;
     }
-    setProcessingFinal()
+    setProcessing(statusFinalEl);
     console.log(finalTranslation);
     if(!finalTranslation.length) {
-        setProcessingFinalDone();
+        setProcessingDone(statusFinalEl);
         alert('Please add translate some text first');
-        return
+        return;
     }
     const response = await fetchFinalAudio();
-    await playAudioFromBlob(response);
-    setProcessingFinalDone();
+    if(response.status === 200) {
+        await playAudioFromBlob(response, stopFinalEl);
+        setProcessingDone(statusFinalEl);
+    } else {
+        setProcessingError(statusFinalEl)
+    }
 });
 
 downloadFinalEl.addEventListener('click', async() => {
-    setProcessingFinal();
+    setProcessing();
     const text = textEl.value;
     if(!text) {
-        setProcessingFinalDone();
+        setProcessingDone(statusFinalEl);
         alert('Please add translate some text first');
-        return
+        return;
     }
     const response = await fetchFinalAudio(text);
-    await downloadMp3(response);
-    setProcessingFinalDone();
+    if(response.status === 200) {
+        await downloadMp3(response);
+        setProcessingDone(statusFinalEl);
+    } else {
+        setProcessingError(statusFinalEl)
+    }
 });
 
 async function fetchTranslation(text, t0) {
@@ -123,7 +145,7 @@ async function fetchTranslation(text, t0) {
         });
     const t1 = performance.now();
     responseTimeEl.innerText = (t1 - t0).toFixed(2);
-    return await response.json();
+    return response;
 }
 
 async function fetchAudio() {
@@ -161,31 +183,32 @@ async function fetchFinalAudio() {
     return response;
 }
 
-async function playAudioFromBlob(response) {
+async function playAudioFromBlob(response, stopButtonEl) {
     if(playing) {
         console.log('Already playing');
         return;
     }
     try {
-        stopEl.style.display = 'inline-block';
+        stopButtonEl.style.display = 'inline-block';
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
         const clickEventListener = () => {
             audio.pause();
-            stopEl.style.display = 'none';
-            stopEl.removeEventListener('click', clickEventListener);
+            stopButtonEl.style.display = 'none';
+            stopButtonEl.removeEventListener('click', clickEventListener);
             playing = false;
         };
-        stopEl.addEventListener('click', clickEventListener);
-        playing = true;
+        stopButtonEl.addEventListener('click', clickEventListener);
         audio.addEventListener('ended', () => {
+            stopButtonEl.style.display = 'none';
+            stopButtonEl.removeEventListener('click', clickEventListener);
             playing = false;
-            console.log('Ended')
-        })
+        });
+        playing = true;
         await audio.play();
     } catch(e) {
-        stopEl.style.display = 'none';
+        stopButtonEl.style.display = 'none';
     }
 }
 
@@ -246,24 +269,22 @@ function getText() {
     return text;
 }
 
-function setProcessing() {
+function setProcessing(statusEl) {
     statusEl.innerText = 'Processing...';
 }
 
-function setProcessingDone() {
+function setProcessingDone(statusEl) {
     statusEl.innerText = 'Done';
     setTimeout(() => {
         statusEl.innerText = '';
     }, 2500);
 }
 
-function setProcessingFinal() {
-    statusFinalEl.innerText = 'Processing...';
-}
-
-function setProcessingFinalDone() {
-    statusFinalEl.innerText = 'Done';
+function setProcessingError(statusEl) {
+    statusEl.innerText = 'Error';
+    statusEl.style.color = 'red';
     setTimeout(() => {
-        statusFinalEl.innerText = '';
+        statusEl.style.color = 'rgb(27, 24, 24)';
+        statusEl.innerText = '';
     }, 2500);
 }
