@@ -20,8 +20,8 @@ let playing = false;
 
 submitEl.addEventListener('click', async() => {
     finalTranslation = [];
-    setProcessing(statusEl);
     resultAlternativesEl.innerHTML = '';
+    setProcessing(statusEl);
     const text = textEl.value;
     if(!text) {
         setProcessingDone(statusEl);
@@ -100,7 +100,6 @@ listenToFinalEl.addEventListener('click', async() => {
         return;
     }
     setProcessing(statusFinalEl);
-    console.log(finalTranslation);
     if(!finalTranslation.length) {
         setProcessingDone(statusFinalEl);
         alert('Please add translate some text first');
