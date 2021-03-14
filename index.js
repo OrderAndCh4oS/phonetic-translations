@@ -1,5 +1,5 @@
 const textEl = document.getElementById('text');
-const resultEl = document.getElementById('result');
+const resultAlternativesEl = document.getElementById('result-alternatives');
 const responseTimeEl = document.getElementById('response-time');
 const languageEl = document.getElementById('language');
 const submitEl = document.getElementById('submit');
@@ -9,8 +9,11 @@ const statusEl = document.getElementById('status');
 const stopEl = document.getElementById('stop');
 const downloadEl = document.getElementById('download');
 
+const isLetter = (str) => /\p{L}/u.test(str)
+
 submitEl.addEventListener('click', async() => {
     setProcessing();
+    resultAlternativesEl.innerHTML = '';
     const text = textEl.value;
     if(!text) alert('Please enter some text');
     const t0 = performance.now();
@@ -27,7 +30,48 @@ submitEl.addEventListener('click', async() => {
     const t1 = performance.now();
     responseTimeEl.innerText = (t1 - t0).toFixed(2);
     const result = await response.json();
-    resultEl.value = result.translation;
+    const raw = result.raw;
+    for(const item of raw) {
+        const span = document.createElement('span');
+        span.style.position = 'relative';
+        if('char' in item) {
+            span.innerText = item.char;
+            span.style.color = isLetter(item.char) ? 'red' : 'initial'
+        } else if('phonetics' in item) {
+            span.innerText = item.phonetics[0];
+            if(item.phonetics.length > 1) {
+                span.style.color = 'blue'
+                const infoBox = document.createElement('span');
+                infoBox.innerHTML = item.phonetics
+                    .map((p, i) => `<span>${i + 1}. ${p}</span>`)
+                    .join('</br>');
+                infoBox.style.padding = '3px';
+                document.body.append(infoBox);
+                const width = infoBox.offsetWidth;
+                console.log('width', width)
+                document.body.removeChild(infoBox);
+                infoBox.style.display = 'none';
+                infoBox.style.position = 'absolute';
+                infoBox.style.transform = 'translate(-50%)';
+                infoBox.style.left = '50%';
+                infoBox.style.bottom = '20px';
+                infoBox.style.width = `${width + 8}px`;
+                infoBox.style.backgroundColor = 'black';
+                infoBox.style.color = 'white';
+                infoBox.style.borderRadius = '2px';
+                infoBox.style.textAlign = 'center';
+
+                span.append(infoBox);
+                span.addEventListener('mouseenter', () => {
+                    infoBox.style.display = 'inline-block'
+                });
+                span.addEventListener('mouseleave', () => {
+                    infoBox.style.display = 'none'
+                });
+            }
+        }
+        resultAlternativesEl.append(span);
+    }
     setProcessingDone();
 });
 
