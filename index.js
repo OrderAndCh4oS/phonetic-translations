@@ -15,6 +15,7 @@ const statusFinalEl = document.getElementById('status-final');
 const isLetter = (str) => /\p{L}/u.test(str);
 
 let finalTranslation = [];
+let playing = false;
 
 submitEl.addEventListener('click', async() => {
     finalTranslation = [];
@@ -50,6 +51,10 @@ submitEl.addEventListener('click', async() => {
 });
 
 listenEl.addEventListener('click', async() => {
+    if(playing) {
+        console.log('Already playing');
+        return;
+    }
     setProcessing();
     const text = textEl.value;
     if(!text) {
@@ -76,6 +81,10 @@ downloadEl.addEventListener('click', async() => {
 });
 
 listenToFinalEl.addEventListener('click', async() => {
+    if(playing) {
+        console.log('Already playing');
+        return;
+    }
     setProcessingFinal()
     console.log(finalTranslation);
     if(!finalTranslation.length) {
@@ -153,6 +162,10 @@ async function fetchFinalAudio() {
 }
 
 async function playAudioFromBlob(response) {
+    if(playing) {
+        console.log('Already playing');
+        return;
+    }
     try {
         stopEl.style.display = 'inline-block';
         const blob = await response.blob();
@@ -162,8 +175,14 @@ async function playAudioFromBlob(response) {
             audio.pause();
             stopEl.style.display = 'none';
             stopEl.removeEventListener('click', clickEventListener);
+            playing = false;
         };
         stopEl.addEventListener('click', clickEventListener);
+        playing = true;
+        audio.addEventListener('ended', () => {
+            playing = false;
+            console.log('Ended')
+        })
         await audio.play();
     } catch(e) {
         stopEl.style.display = 'none';
