@@ -78,7 +78,7 @@ listenEl.addEventListener('click', async() => {
 });
 
 downloadEl.addEventListener('click', async() => {
-    setProcessing();
+    setProcessing(statusEl);
     const text = textEl.value;
     if(!text) {
         setProcessingDone(statusEl);
@@ -115,7 +115,7 @@ listenToFinalEl.addEventListener('click', async() => {
 });
 
 downloadFinalEl.addEventListener('click', async() => {
-    setProcessing();
+    setProcessing(statusFinalEl);
     const text = textEl.value;
     if(!text) {
         setProcessingDone(statusFinalEl);
