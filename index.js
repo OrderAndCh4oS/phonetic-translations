@@ -4,6 +4,8 @@ const responseTimeEl = document.getElementById('response-time');
 const languageEl = document.getElementById('language');
 const genderEl = document.getElementById('gender');
 const listenEl = document.getElementById('listen');
+const prosodyEl = document.getElementById('prosody');
+const prosodyValueEl = document.getElementById('prosody-value');
 const stopEl = document.getElementById('stop');
 const stopFinalEl = document.getElementById('stop-final');
 const submitEl = document.getElementById('submit');
@@ -20,7 +22,7 @@ let playing = false;
 
 submitEl.addEventListener('click', async() => {
     finalTranslation = [];
-    resultAlternativesEl.innerHTML = '';
+    resultAlternativesEl.innerHTML = '&nbsp;';
     setProcessing(statusEl);
     const text = textEl.value;
     if(!text) {
@@ -64,7 +66,7 @@ listenEl.addEventListener('click', async() => {
     setProcessing(statusEl);
     const text = textEl.value;
     if(!text) {
-        setProcessingDone();
+        setProcessingDone(statusEl);
         alert('Please enter some text');
         return;
     }
@@ -131,6 +133,10 @@ downloadFinalEl.addEventListener('click', async() => {
     }
 });
 
+prosodyEl.addEventListener('input', function() {
+    prosodyValueEl.value = this.value;
+})
+
 async function fetchTranslation(text, t0) {
     const response = await fetch(
         `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}`,
@@ -139,6 +145,7 @@ async function fetchTranslation(text, t0) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'X-API-Key': 'OI0UuQNcMp4mGlWoIeya49M7Y119Z2vxaWYcD4Kz'
             },
             body: JSON.stringify({text}),
         });
@@ -151,12 +158,13 @@ async function fetchAudio() {
     const text = getText();
     const t0 = performance.now();
     const response = await fetch(
-        `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}?audio=true&gender=${genderEl.value}`,
+        `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}?audio=true&gender=${genderEl.value}&prosody=${prosodyValueEl.value}`,
         {
             method: 'post',
             headers: {
                 'Accept': 'audio/mpeg',
                 'Content-Type': 'application/json',
+                'X-API-Key': 'OI0UuQNcMp4mGlWoIeya49M7Y119Z2vxaWYcD4Kz'
             },
             body: JSON.stringify({text}),
         });
@@ -168,12 +176,13 @@ async function fetchAudio() {
 async function fetchFinalAudio() {
     const t0 = performance.now();
     const response = await fetch(
-        `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}/audio?gender=${genderEl.value}`,
+        `https://9k24oe3gyg.execute-api.eu-west-2.amazonaws.com/prod/translate/${languageEl.value}/audio?gender=${genderEl.value}&prosody=${prosodyValueEl.value}`,
         {
             method: 'post',
             headers: {
                 'Accept': 'audio/mpeg',
                 'Content-Type': 'application/json',
+                'X-API-Key': 'OI0UuQNcMp4mGlWoIeya49M7Y119Z2vxaWYcD4Kz'
             },
             body: JSON.stringify({text: finalTranslation}),
         });
@@ -246,7 +255,7 @@ function makeInfoBox(item) {
     infoBox.innerHTML = item.phonetics
         .map((p, i) => `<span>${i + 1}. ${p}</span>`)
         .join('</br>');
-    infoBox.style.padding = '3px';
+    infoBox.style.padding = '3px 5px';
     document.body.append(infoBox);
     const width = infoBox.offsetWidth;
     document.body.removeChild(infoBox);
@@ -255,7 +264,7 @@ function makeInfoBox(item) {
     infoBox.style.transform = 'translate(-50%)';
     infoBox.style.left = '50%';
     infoBox.style.bottom = '20px';
-    infoBox.style.width = `${width + 8}px`;
+    infoBox.style.width = `${width + 12}px`;
     infoBox.style.backgroundColor = 'black';
     infoBox.style.color = 'white';
     infoBox.style.borderRadius = '2px';

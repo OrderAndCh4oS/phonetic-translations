@@ -2,10 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Phonetics Translations</title>
-    <link rel="stylesheet" href="https://unpkg.com/latex.css/style.min.css"/>
+    <title>Phonetic Translations</title>
+    <style>
+        body {
+            padding: 4em 1.5em;
+            margin: 0 auto;
+            max-width: 80ch;
+            min-height: 100vh;
+            background-color: hsl(210,20%,98%);
+            overflow-x: hidden;
+            line-height: 1.4;
+            font-family: "Times", "Times New Roman", serif;
+            font-size: 18px;
+        }
+        h1, p, label {
+            margin: 0;
+            padding: 0;
+        }
+        p, textarea, button, input, select, .result-box {
+            line-height: 1.4;
+            font-family: "Times", "Times New Roman", serif;
+            font-size: 18px;
+        }
+        label {
+            padding-bottom: 4px;
+        }
+        input, select {
+            display: inline-block;
+        }
+        button {
+            padding: 0 4px;
+        }
+        .result-box {
+            padding: 6px 8px;
+            border: 1px solid rgb(118, 118, 118);
+            border-radius: 2px;
+            background-color: #fff;
+        }
+        textarea {
+            padding: 6px 8px;
+            display: block;
+            width: 100%;
+        }
+        p {
+            margin-top: 1em;
+        }
+    </style>
 </head>
 <body>
+<h1>Phonetic Translations</h1>
 <p>
     <label for="text">Text</label>
     <textarea id="text" rows="7"></textarea>
@@ -26,6 +71,11 @@
     </select>
 </p>
 <p>
+    <label for="prosody">Voice Speed</label>
+    <input id="prosody" type="range" min="50" max="150" value="85">
+    <input id="prosody-value" readonly title="prosody" value="85">
+</p>
+<p>
     <button id="submit">Translate</button>
     <button id="listen">Listen</button>
     <button id="stop" style="display: none">Stop</button>
@@ -33,7 +83,7 @@
     <span id="status"></span>
 </p>
 <p>Translation</p>
-<div id="result-alternatives" style="padding: 8px; border: 1px solid rgb(118, 118, 118); border-radius: 2px"></div>
+<div id="result-alternatives" class="result-box bc_white">&nbsp;</div>
 <p>
     <button id="listen-to-final">Listen to Final</button>
     <button id="stop-final" style="display: none">Stop</button>
